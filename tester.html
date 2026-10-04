@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Studio</title>
+    
+    <!-- Tailwind CSS for modern responsive layout -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- CodeMirror 5 (Core + Dracula Theme + Python Mode + Auto Close Brackets) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/matchbrackets.min.js"></script>
+
+    <!-- Pyodide CDN for full WebAssembly Python environment -->
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0f19;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        /* Core CodeMirror layout & standard dark background */
+        .CodeMirror {
+            height: 100% !important;
+            font-family: 'Fira Code', monospace !important;
+            font-size: 0.95rem !important;
+            line-height: 1.6 !important;
+            border-radius: 0 0 0.75rem 0.75rem;
+            background-color: #181b28 !important;
+            color: #f8f8f2 !important; /* General text color fix */
+        }
+
+        .CodeMirror-gutters {
+            background-color: #10121d !important;
+            border-right: 1px solid #282e46 !important;
+        }
+
+        .CodeMirror-linenumber {
+            color: #6272a4 !important;
+            font-weight: 500;
+        }
+
+        /* High-contrast Token Syntax Highlighting */
+        .cm-s-dracula span.cm-keyword { color: #ff79c6 !important; font-weight: 600; }  /* def, import, return, class */
+        .cm-s-dracula span.cm-string { color: #f1fa8c !important; }   /* Strings */
+        .cm-s-dracula span.cm-number { color: #bd93f9 !important; font-weight: 600; }  /* Numbers */
+        .cm-s-dracula span.cm-comment { color: #7f8ea3 !important; font-style: italic; } /* Comments */
+        .cm-s-dracula span.cm-def { color: #50fa7b !important; font-weight: 600; }  /* Function / class names */
+        .cm-s-dracula span.cm-variable { color: #f8f8f2 !important; } /* Variable names */
+        .cm-s-dracula span.cm-variable-2 { color: #8be9fd !important; } /* Parameters / second level vars */
+        .cm-s-dracula span.cm-operator { color: #ff79c6 !important; } /* Operators = + - * / */
+        .cm-s-dracula span.cm-builtin { color: #8be9fd !important; }  /* print, range, len */
+        .cm-s-dracula span.cm-property { color: #66d9ef !important; } /* Properties */
+
+        .CodeMirror-cursor {
+            border-left: 2px solid #50fa7b !important;
+        }
+
+        .font-mono-code {
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #282e46;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3b4363;
+        }
+
+        @keyframes spinner {
+            to {transform: rotate(360deg);}
+        }
+        .animate-spin-fast {
+            animation: spinner 0.6s linear infinite;
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col justify-between overflow-hidden">
+
+    <!-- Top Navigation Header -->
+    <header class="h-16 bg-slate-900 border-b border-slate-800 px-4 md:px-6 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-0">
+            <div class="flex items-center justify-center p-4">
+  <img src="C:\Users\marcu\OneDrive\Pictures\MENOS RUIDO\favicon_py.png" alt="Icono" class="w-[48px] h-[48px] object-contain">
+            </div>
+            <div>
+                <h1 class="font-bold text-lg leading-tight tracking-wide flex items-center gap-2">
+                    Python Studio
+                </h1>
+                <p class="text-xs text-slate-300 hidden sm:block">Editor de ejecución local</p>
+            </div>
+        </div>
+
+        <!-- Action Controls -->
+        <div class="flex items-center gap-2 md:gap-3">
+            <!-- Clear Console Button -->
+            <button onclick="clearConsole()" class="px-3 py-2 text-sm rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all flex items-center gap-2 border border-slate-700">
+                <i class="fa-solid fa-eraser"></i>
+                <span class="hidden md:inline">Limpiar Consola</span>
+            </button>
+
+            <!-- Execute Code Button -->
+            <button id="run-btn" onclick="runPythonCode()" disabled class="px-5 py-2 text-sm font-semibold rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                <i class="fa-solid fa-play"></i>
+                <span>Ejecutar <span class="hidden lg:inline text-xs opacity-75">(Ctrl+Enter)</span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Workspace Layout -->
+    <main class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 p-4 min-h-0 bg-slate-950">
+        
+        <!-- Left Panel: Python Code Editor -->
+        <div class="flex flex-col rounded-xl bg-slate-900 border border-slate-800 overflow-hidden shadow-xl">
+            <!-- Editor Header -->
+            <div class="px-4 py-2.5 bg-slate-900/80 border-b border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                    <i class="fa-solid fa-code text-sky-400"></i>
+                    <span>main.py</span>
+                </div>
+                <div class="flex items-center gap-2 text-xs text-slate-400">
+                </div>
+            </div>
+            <!-- CodeMirror Textarea Mount Target -->
+            <div class="flex-1 relative overflow-hidden">
+                <textarea id="code-editor" class="hidden"></textarea>
+            </div>
+        </div>
+
+        <!-- Right Panel: Output & Console -->
+        <div class="flex flex-col rounded-xl bg-slate-900 border border-slate-800 overflow-hidden shadow-xl">
+            <!-- Console Header -->
+            <div class="px-4 py-2.5 bg-slate-900/80 border-b border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                    <i class="fa-solid fa-terminal text-emerald-400"></i>
+                    <span>Consola de Salida</span>
+                </div>
+            </div>
+            
+            <!-- Output Console Container -->
+            <div class="flex-1 p-4 overflow-y-auto font-mono-code text-sm leading-relaxed bg-[#10121d]" id="console-wrapper">
+                <pre id="output" class="text-slate-200 whitespace-pre-wrap break-words">Inicializando motor de Python en el navegador...</pre>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let editor;
+        let pyodideInstance = null;
+
+        // Code sample provided by default
+        const initialCode = `#Remember to share this tool with a friend if you're loving it :)
+
+menos_ruido_es_genial = True
+
+if menos_ruido_es_genial:
+    print("Visit menosruido.store for more amazing tools!")
+`;
+
+        // Initialize CodeMirror Editor with Dracula Theme
+        window.addEventListener('DOMContentLoaded', () => {
+            editor = CodeMirror.fromTextArea(document.getElementById('code-editor'), {
+                mode: 'python',
+                theme: 'dracula',
+                lineNumbers: true,
+                indentUnit: 4,
+                tabSize: 4,
+                indentWithTabs: false,
+                autoCloseBrackets: true,
+                matchBrackets: true,
+                lineWrapping: true,
+                extraKeys: {
+                    "Tab": function(cm) {
+                        if (cm.somethingSelected()) {
+                            cm.indentSelection("add");
+                        } else {
+                            cm.replaceSelection("    ", "end");
+                        }
+                    },
+                    "Ctrl-Enter": function(cm) {
+                        runPythonCode();
+                    },
+                    "Cmd-Enter": function(cm) {
+                        runPythonCode();
+                    }
+                }
+            });
+
+            editor.setValue(initialCode);
+            initPyodide();
+        });
+
+        // Initialize WebAssembly Pyodide Environment
+        async function initPyodide() {
+            const statusBadge = document.getElementById('status-badge');
+            const runBtn = document.getElementById('run-btn');
+            const outputEl = document.getElementById('output');
+
+            try {
+                pyodideInstance = await loadPyodide({
+                    stdout: (text) => appendConsole(text, 'stdout'),
+                    stderr: (text) => appendConsole(text, 'stderr')
+                });
+
+                // Update UI state once engine is active
+                runBtn.disabled = false;
+                outputEl.innerHTML = `<span class="text-emerald-400">⚡ Engine Python listo. Haz clic en <b><i>"Ejecutar"</i></b> o presiona <b><i>"Ctrl+Enter"</i></b> para probar código.</span>\n`;
+            } catch (err) {
+                statusBadge.className = "px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center gap-2";
+                statusBadge.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i><span>Error al cargar</span>`;
+                outputEl.innerHTML = `<span class="text-rose-400">❌ Error cargando el runtime de Python:\n${err.message}</span>`;
+            }
+        }
+
+        // Output helper for console logs
+        function appendConsole(text, stream = 'stdout') {
+            const outputEl = document.getElementById('output');
+            const wrapper = document.getElementById('console-wrapper');
+            
+            const span = document.createElement('span');
+            if (stream === 'stderr') {
+                span.className = 'text-rose-400';
+            } else {
+                span.className = 'text-slate-200';
+            }
+            span.textContent = text + '\n';
+            outputEl.appendChild(span);
+            
+            // Auto scroll to bottom
+            wrapper.scrollTop = wrapper.scrollHeight;
+        }
+
+        // Run user python code
+        async function runPythonCode() {
+            if (!pyodideInstance) return;
+
+            const runBtn = document.getElementById('run-btn');
+            const outputEl = document.getElementById('output');
+
+            // Clear previous console outputs
+            outputEl.innerHTML = '';
+            runBtn.disabled = true;
+            runBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin-fast"></i><span>Ejecutando...</span>`;
+
+            const code = editor.getValue();
+
+            try {
+                // Execute code via Pyodide
+                await pyodideInstance.runPythonAsync(code);
+            } catch (err) {
+                appendConsole(err.message, 'stderr');
+            } finally {
+                runBtn.disabled = false;
+                runBtn.innerHTML = `<i class="fa-solid fa-play"></i><span>Ejecutar <span class="hidden lg:inline text-xs opacity-75">(Ctrl+Enter)</span></span>`;
+            }
+        }
+
+        // Clear console UI
+        function clearConsole() {
+            const outputEl = document.getElementById('output');
+            outputEl.innerHTML = `<span class="text-slate-500"></span>\n`;
+        }
+    </script>
+</body>
+</html>
