@@ -103,7 +103,7 @@
     <header class="h-16 bg-slate-900 border-b border-slate-800 px-4 md:px-6 flex items-center justify-between shrink-0">
         <div class="flex items-center gap-0">
             <div class="flex items-center justify-center p-4">
-  <img src="C:\Users\marcu\OneDrive\Pictures\MENOS RUIDO\favicon_py.png" alt="Icono" class="w-[48px] h-[48px] object-contain">
+  <img src="assets/favicon_py.png" alt="Icono" class="w-[48px] h-[48px] object-contain">
             </div>
             <div>
                 <h1 class="font-bold text-lg leading-tight tracking-wide flex items-center gap-2">
@@ -226,11 +226,11 @@ if menos_ruido_es_genial:
 
                 // Update UI state once engine is active
                 runBtn.disabled = false;
-                outputEl.innerHTML = `<span class="text-emerald-400">⚡ Engine Python listo. Haz clic en <b><i>"Ejecutar"</i></b> o presiona <b><i>"Ctrl+Enter"</i></b> para probar código.</span>\n`;
+                outputEl.innerHTML = `<span class="text-emerald-400">Engine Python listo. Haz clic en <b><i>"Ejecutar"</i></b> o presiona <b><i>"Ctrl+Enter"</i></b> para probar código.</span>\n`;
             } catch (err) {
                 statusBadge.className = "px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center gap-2";
                 statusBadge.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i><span>Error al cargar</span>`;
-                outputEl.innerHTML = `<span class="text-rose-400">❌ Error cargando el runtime de Python:\n${err.message}</span>`;
+                outputEl.innerHTML = `<span class="text-rose-400">Error cargando el runtime de Python:\n${err.message}</span>`;
             }
         }
 
