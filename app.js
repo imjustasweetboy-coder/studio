@@ -8,7 +8,7 @@ const codeStorage = {
     python: `# Studio Python Engine\nmenos_ruido_es_genial = True\n\nif menos_ruido_es_genial:\n    print("Visit menosruido.store for tools!")`,
     web: {
         html: `<!DOCTYPE html>\n<html>\n<head>\n  <style>body { font-family: sans-serif; text-align: center; padding: 20px; }</style>\n</head>\n<body>\n  <h1>Hola desde Studio Web!</h1>\n  <button onclick="saludar()">Probar JS</button>\n</body>\n</html>`,
-        css: `/* CSS Personalizado */\nh1 {\n  color: #0284c7;\n}`,
+        css: `/* CSS Personalizado */\nh1 {\n  color: #ffffff;\n}`,
         js: `function saludar() {\n  alert('¡El Javascript está funcionando correctamente!');\n}`
     },
     dart: `// Simulador Flutter UI\nWidget build() {\n  return Container(\n    padding: 16,\n    child: Column(\n      children: [\n        Text('Bienvenido a Flutter Studio', style: TextStyle(fontSize: 20, bold: true)),\n        SizedBox(height: 10),\n        ElevatedButton('Click Aquí', onPressed: null)\n      ]\n    )\n  );\n}`
