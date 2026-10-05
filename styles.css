@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #0b0f19;
+    color: #f8fafc;
+}
+
+/* CodeMirror Dracula Custom Overrides */
+.CodeMirror {
+    height: 100% !important;
+    font-family: 'Fira Code', monospace !important;
+    font-size: 0.9rem !important;
+    line-height: 1.5 !important;
+    background-color: #181b28 !important;
+    color: #f8f8f2 !important;
+}
+
+.CodeMirror-gutters {
+    background-color: #10121d !important;
+    border-right: 1px solid #282e46 !important;
+}
+
+.CodeMirror-linenumber {
+    color: #6272a4 !important;
+}
+
+.CodeMirror-cursor {
+    border-left: 2px solid #50fa7b !important;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #0b0f19;
+}
+::-webkit-scrollbar-thumb {
+    background: #282e46;
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #3b4363;
+}
