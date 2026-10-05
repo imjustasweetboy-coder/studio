@@ -5,7 +5,7 @@ let currentWebTab = 'html'; // 'html' | 'css' | 'js'
 
 // Initial Code Storage
 const codeStorage = {
-    python: `# Studio Python Engine\nmenos_ruido_es_genial = True\n\nif menos_ruido_es_genial:\n    print("Visit menosruido.store for tools!")`,
+    python: `# Studio Python Engine\nmenos_ruido_es_genial = True\n\nif menos_ruido_es_genial:\n    print("¡Visita menosruido.store para más herramientas!")`,
     web: {
         html: `<!DOCTYPE html>\n<html>\n<head>\n  <style>body { font-family: sans-serif; text-align: center; padding: 20px; }</style>\n</head>\n<body>\n  <h1>Hola desde Studio Web!</h1>\n  <button onclick="saludar()">Probar JS</button>\n</body>\n</html>`,
         css: `/* CSS Personalizado */\nh1 {\n  color: #ffffff;\n}`,
